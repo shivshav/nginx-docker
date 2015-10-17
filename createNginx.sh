@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 BASEDIR=$(readlink -f $(dirname $0))
-HOST_NAME=${1:127.0.0.1}
+HOST_NAME=${1:-127.0.0.1}
 GERRIT_NAME=${2:-gerrit}
 JENKINS_NAME=${3:-jenkins}
 REDMINE_NAME=${4:-redmine}
