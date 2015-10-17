@@ -1,13 +1,14 @@
 #!/bin/bash
 set -e
 BASEDIR=$(readlink -f $(dirname $0))
-GERRIT_NAME=${1:-gerrit}
-JENKINS_NAME=${2:-jenkins}
-REDMINE_NAME=${3:-redmine}
-NEXUS_NAME=${4:-nexus}
+HOST_NAME=${1:127.0.0.1}
+GERRIT_NAME=${2:-gerrit}
+JENKINS_NAME=${3:-jenkins}
+REDMINE_NAME=${4:-redmine}
+NEXUS_NAME=${5:-nexus}
 
-NGINX_IMAGE_NAME=${5:-nginx}
-NGINX_NAME=${6:-proxy}
+NGINX_IMAGE_NAME=${6:-nginx}
+NGINX_NAME=${7:-proxy}
 NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-200m}
 
 PROXY_CONF=proxy.conf
