@@ -1,27 +1,28 @@
 #!/bin/bash
 set -e
-GERRIT_NAME=${GERRIT_NAME:-gerrit}
-JENKINS_NAME=${JENKINS_NAME:-jenkins}
-REDMINE_NAME=${REDMINE_NAME:-redmine}
-NEXUS_NAME=${NEXUS_NAME:-nexus}
+BASEDIR=$(readlink -f $(dirname $0))
+GERRIT_NAME=${1:-gerrit}
+JENKINS_NAME=${2:-jenkins}
+REDMINE_NAME=${3:-redmine}
+NEXUS_NAME=${4:-nexus}
 
-NGINX_IMAGE_NAME=${NGINX_IMAGE_NAME:-nginx}
-NGINX_NAME=${NGINX_NAME:-proxy}
+NGINX_IMAGE_NAME=${5:-nginx}
+NGINX_NAME=${6:-proxy}
 NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-200m}
 
 PROXY_CONF=proxy.conf
 
 # Setup proxy URI
 if [ ${#NEXUS_WEBURL} -eq 0 ]; then
-    sed "s/{{HOST_URL}}/${HOST_NAME}/g" ~/nginx-docker/${PROXY_CONF}.nexus.template > ~/nginx-docker/${PROXY_CONF}
+    sed "s/{{HOST_URL}}/${HOST_NAME}/g" ${BASEDIR}/${PROXY_CONF}.nexus.template > ${BASEDIR}/${PROXY_CONF}
 else
-    sed "s/{{HOST_URL}}/${HOST_NAME}/g" ~/nginx-docker/${PROXY_CONF}.template > ~/nginx-docker/${PROXY_CONF}
+    sed "s/{{HOST_URL}}/${HOST_NAME}/g" ${BASEDIR}/${PROXY_CONF}.template > ${BASEDIR}/${PROXY_CONF}
 fi
-sed -i "s/{GERRIT_URI}/${GERRIT_NAME}/g" ~/nginx-docker/${PROXY_CONF}
-sed -i "s/{JENKINS_URI}/${JENKINS_NAME}/g" ~/nginx-docker/${PROXY_CONF}
-sed -i "s/{REDMINE_URI}/${REDMINE_NAME}/g" ~/nginx-docker/${PROXY_CONF}
-sed -i "s/{NEXUS_URI}/${NEXUS_NAME}/g" ~/nginx-docker/${PROXY_CONF}
-sed -i "s/{{NGINX_MAX_UPLOAD_SIZE}}/${NGINX_MAX_UPLOAD_SIZE}/g" ~/nginx-docker/${PROXY_CONF}
+sed -i "s/{GERRIT_URI}/${GERRIT_NAME}/g" ${BASEDIR}/${PROXY_CONF}
+sed -i "s/{JENKINS_URI}/${JENKINS_NAME}/g" ${BASEDIR}/${PROXY_CONF}
+sed -i "s/{REDMINE_URI}/${REDMINE_NAME}/g" ${BASEDIR}/${PROXY_CONF}
+sed -i "s/{NEXUS_URI}/${NEXUS_NAME}/g" ${BASEDIR}/${PROXY_CONF}
+sed -i "s/{{NGINX_MAX_UPLOAD_SIZE}}/${NGINX_MAX_UPLOAD_SIZE}/g" ${BASEDIR}/${PROXY_CONF}
 
 # Start proxy
 if [ ${#NEXUS_WEBURL} -eq 0 ]; then #proxy nexus
@@ -32,7 +33,7 @@ if [ ${#NEXUS_WEBURL} -eq 0 ]; then #proxy nexus
     --link ${REDMINE_NAME}:${REDMINE_NAME} \
     --link ${NEXUS_NAME}:${NEXUS_NAME} \
     -p 80:80 \
-    -v ~/nginx-docker/${PROXY_CONF}:/etc/nginx/conf.d/default.conf:ro \
+    -v ${BASEDIR}/${PROXY_CONF}:/etc/nginx/conf.d/default.conf:ro \
     -d ${NGINX_IMAGE_NAME}
 else #without nexus
     docker run \
@@ -41,6 +42,6 @@ else #without nexus
     --link ${JENKINS_NAME}:${JENKINS_NAME} \
     --link ${REDMINE_NAME}:${REDMINE_NAME} \
     -p 80:80 \
-    -v ~/nginx-docker/${PROXY_CONF}:/etc/nginx/conf.d/default.conf:ro \
+    -v ${BASEDIR}/${PROXY_CONF}:/etc/nginx/conf.d/default.conf:ro \
     -d ${NGINX_IMAGE_NAME}
 fi
