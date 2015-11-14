@@ -3,6 +3,9 @@ server {
     server_name  {{HOST_URL}};
     client_max_body_size {{NGINX_MAX_UPLOAD_SIZE}};
 
+    auth_ldap "Forbidden";
+    auth_ldap_servers ldapserver;
+
     location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
@@ -47,5 +50,6 @@ server {
     location = /50x.html {
         root   /usr/share/nginx/html;
     }
+
 }
 
