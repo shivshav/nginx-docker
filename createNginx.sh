@@ -6,14 +6,14 @@ GERRIT_NAME=${2:-gerrit}
 JENKINS_NAME=${3:-jenkins}
 REDMINE_NAME=${4:-redmine}
 NEXUS_NAME=${5:-nexus}
-PHPLDAPADMIN_NAME=${6:-phpldapadmin}
-NGINX_IMAGE_NAME=${7:-h3nrik/nginx}
-NGINX_NAME=${8:-proxy}
+NGINX_IMAGE_NAME=${6:-h3nrik/nginx}
+NGINX_NAME=${7:-proxy}
 NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-200m}
 
-LDAP_NAME=${9:-openldap}
-LDAP_DOMAIN=${10:-demo.com}
-LDAP_PASSWD=${11:-secret}
+LDAP_NAME=${8:-openldap}
+LDAP_DOMAIN=${9:-demo.com}
+LDAP_PASSWD=${10:-secret}
+PHPLDAPADMIN_NAME=${11:-phpldapadmin}
 
 LDAP_BASEDN="dc=$(echo ${LDAP_DOMAIN} | sed 's/\./,dc=/g')"
 LDAP_BINDDN="cn=admin,${LDAP_BASEDN}"
