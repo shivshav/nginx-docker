@@ -6,9 +6,9 @@ GERRIT_NAME=${2:-gerrit}
 JENKINS_NAME=${3:-jenkins}
 REDMINE_NAME=${4:-redmine}
 NEXUS_NAME=${5:-nexus}
-
-NGINX_IMAGE_NAME=${6:-nginx}
-NGINX_NAME=${7:-proxy}
+DOKUWIKI_NAME=${6:-wiki}
+NGINX_IMAGE_NAME=${7:-nginx}
+NGINX_NAME=${8:-proxy}
 NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-200m}
 
 PROXY_CONF=proxy.conf
@@ -23,7 +23,9 @@ sed -i "s/{GERRIT_URI}/${GERRIT_NAME}/g" ${BASEDIR}/${PROXY_CONF}
 sed -i "s/{JENKINS_URI}/${JENKINS_NAME}/g" ${BASEDIR}/${PROXY_CONF}
 sed -i "s/{REDMINE_URI}/${REDMINE_NAME}/g" ${BASEDIR}/${PROXY_CONF}
 sed -i "s/{NEXUS_URI}/${NEXUS_NAME}/g" ${BASEDIR}/${PROXY_CONF}
+sed -i "s/{DOKUWIKI_URI}/${DOKUWIKI_NAME}/g" ${BASEDIR}/${PROXY_CONF}
 sed -i "s/{{NGINX_MAX_UPLOAD_SIZE}}/${NGINX_MAX_UPLOAD_SIZE}/g" ${BASEDIR}/${PROXY_CONF}
+
 
 # Start proxy
 if [ ${#NEXUS_WEBURL} -eq 0 ]; then #proxy nexus
@@ -32,6 +34,7 @@ if [ ${#NEXUS_WEBURL} -eq 0 ]; then #proxy nexus
     --link ${GERRIT_NAME}:${GERRIT_NAME} \
     --link ${JENKINS_NAME}:${JENKINS_NAME} \
     --link ${REDMINE_NAME}:${REDMINE_NAME} \
+    --link ${DOKUWIKI_NAME}:${DOKUWIKI_NAME} \
     --link ${NEXUS_NAME}:${NEXUS_NAME} \
     -p 80:80 \
     -v ${BASEDIR}/${PROXY_CONF}:/etc/nginx/conf.d/default.conf:ro \
