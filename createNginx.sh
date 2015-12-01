@@ -7,11 +7,20 @@ JENKINS_NAME=${3:-jenkins}
 REDMINE_NAME=${4:-redmine}
 NEXUS_NAME=${5:-nexus}
 DOKUWIKI_NAME=${6:-wiki}
-NGINX_IMAGE_NAME=${7:-nginx}
+
+NGINX_IMAGE_NAME=${7:-h3nrik/nginx}
 NGINX_NAME=${8:-proxy}
 NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-200m}
 
+LDAP_NAME=${9:-openldap}
+LDAP_DOMAIN=${10:-demo.com}
+LDAP_PASSWD=${11:-secret}
+
+LDAP_BASEDN="dc=$(echo ${LDAP_DOMAIN} | sed 's/\./,dc=/g')"
+LDAP_BINDDN="cn=admin,${LDAP_BASEDN}"
+
 PROXY_CONF=proxy.conf
+NGINX_CONF=nginx.conf
 
 # Setup proxy URI
 if [ ${#NEXUS_WEBURL} -eq 0 ]; then
@@ -26,6 +35,15 @@ sed -i "s/{NEXUS_URI}/${NEXUS_NAME}/g" ${BASEDIR}/${PROXY_CONF}
 sed -i "s/{DOKUWIKI_URI}/${DOKUWIKI_NAME}/g" ${BASEDIR}/${PROXY_CONF}
 sed -i "s/{{NGINX_MAX_UPLOAD_SIZE}}/${NGINX_MAX_UPLOAD_SIZE}/g" ${BASEDIR}/${PROXY_CONF}
 
+<<<<<<< HEAD
+=======
+# Setup nginx ldap config
+sed "s/{LDAP_NAME}/${LDAP_NAME}/g" ${BASEDIR}/${NGINX_CONF}.template > ${BASEDIR}/${NGINX_CONF}
+sed -i "s/{LDAP_BASEDN}/${LDAP_BASEDN}/g" ${BASEDIR}/${NGINX_CONF} 
+sed -i "s/{LDAP_BINDDN}/${LDAP_BINDDN}/g" ${BASEDIR}/${NGINX_CONF} 
+sed -i "s/{LDAP_PASSWD}/${LDAP_PASSWD}/g" ${BASEDIR}/${NGINX_CONF} 
+
+>>>>>>> 5828af2fc9011088eea1a1aa0b3b137da73b584f
 
 # Start proxy
 if [ ${#NEXUS_WEBURL} -eq 0 ]; then #proxy nexus
@@ -36,7 +54,9 @@ if [ ${#NEXUS_WEBURL} -eq 0 ]; then #proxy nexus
     --link ${REDMINE_NAME}:${REDMINE_NAME} \
     --link ${DOKUWIKI_NAME}:${DOKUWIKI_NAME} \
     --link ${NEXUS_NAME}:${NEXUS_NAME} \
+    --link ${LDAP_NAME}:${LDAP_NAME} \
     -p 80:80 \
+    -v ${BASEDIR}/${NGINX_CONF}:/etc/nginx/nginx.conf:ro \
     -v ${BASEDIR}/${PROXY_CONF}:/etc/nginx/conf.d/default.conf:ro \
     -d ${NGINX_IMAGE_NAME}
 else #without nexus
@@ -45,7 +65,9 @@ else #without nexus
     --link ${GERRIT_NAME}:${GERRIT_NAME} \
     --link ${JENKINS_NAME}:${JENKINS_NAME} \
     --link ${REDMINE_NAME}:${REDMINE_NAME} \
+    --link ${LDAP_NAME}:${LDAP_NAME} \
     -p 80:80 \
+    -v ${BASEDIR}/${NGINX_CONF}:/etc/nginx/nginx.conf:ro \
     -v ${BASEDIR}/${PROXY_CONF}:/etc/nginx/conf.d/default.conf:ro \
     -d ${NGINX_IMAGE_NAME}
 fi

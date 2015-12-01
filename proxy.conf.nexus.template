@@ -3,6 +3,9 @@ server {
     server_name  {{HOST_URL}};
     client_max_body_size {{NGINX_MAX_UPLOAD_SIZE}};
 
+    auth_ldap "Forbidden";
+    auth_ldap_servers ldapserver;
+
     location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
@@ -29,14 +32,15 @@ server {
     }
 
     location /{NEXUS_URI} {
-        proxy_pass    http://{NEXUS_URI}:8081;
-        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header    X-Real-IP $remote_addr;
+	auth_basic	    off;
+        proxy_pass          http://{NEXUS_URI}:8081/nexus;
         proxy_set_header    Host $host;
-        proxy_send_timeout 300;
-        proxy_read_timeout 300;
-        keepalive_timeout  300;
-        send_timeout       300;
+        proxy_set_header    X-Real-IP $remote_addr;
+        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+#        proxy_send_timeout 300;
+#        proxy_read_timeout 300;
+#        keepalive_timeout  300;
+#        send_timeout       300;
     }
 
     location /{DOKUWIKI_URI} {
@@ -55,5 +59,6 @@ server {
     location = /50x.html {
         root   /usr/share/nginx/html;
     }
+
 }
 
