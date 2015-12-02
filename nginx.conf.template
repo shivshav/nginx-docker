@@ -64,11 +64,15 @@ http {
     #        index  index.html index.htm;
     #    }
     #}
+    auth_ldap_cache_enabled on;
+    auth_ldap_cache_expiration_time 10000;
+    auth_ldap_cache_size 1000;
+
     ldap_server ldapserver {
         url ldap://{LDAP_NAME}/{LDAP_BASEDN}?uid?sub?(objectClass=person);
 #        binddn "cn=admin,dc=demo,dc=com";
-        binddn "{LDAP_BINDDN}";
-        binddn_passwd {LDAP_PASSWD};
+#        binddn "{LDAP_BINDDN}";
+#        binddn_passwd {LDAP_PASSWD};
         require valid_user;
         satisfy all;
     }
