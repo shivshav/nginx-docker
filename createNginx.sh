@@ -7,7 +7,6 @@ JENKINS_NAME=${3:-jenkins}
 REDMINE_NAME=${4:-redmine}
 NEXUS_NAME=${5:-nexus}
 DOKUWIKI_NAME=${6:-wiki}
-
 NGINX_IMAGE_NAME=${7:-h3nrik/nginx}
 NGINX_NAME=${8:-proxy}
 NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-200m}
@@ -15,6 +14,7 @@ NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-200m}
 LDAP_NAME=${9:-openldap}
 LDAP_DOMAIN=${10:-demo.com}
 LDAP_PASSWD=${11:-secret}
+PHPLDAPADMIN_NAME=${12:-phpldapadmin}
 
 LDAP_BASEDN="dc=$(echo ${LDAP_DOMAIN} | sed 's/\./,dc=/g')"
 LDAP_BINDDN="cn=admin,${LDAP_BASEDN}"
@@ -40,7 +40,7 @@ sed "s/{LDAP_NAME}/${LDAP_NAME}/g" ${BASEDIR}/${NGINX_CONF}.template > ${BASEDIR
 sed -i "s/{LDAP_BASEDN}/${LDAP_BASEDN}/g" ${BASEDIR}/${NGINX_CONF} 
 sed -i "s/{LDAP_BINDDN}/${LDAP_BINDDN}/g" ${BASEDIR}/${NGINX_CONF} 
 sed -i "s/{LDAP_PASSWD}/${LDAP_PASSWD}/g" ${BASEDIR}/${NGINX_CONF} 
-
+sed -i "s/{PHPLDAPADMIN_URI}/${PHPLDAPADMIN_NAME}/g" ${BASEDIR}/${PROXY_CONF}
 
 # Start proxy
 if [ ${#NEXUS_WEBURL} -eq 0 ]; then #proxy nexus
@@ -51,6 +51,7 @@ if [ ${#NEXUS_WEBURL} -eq 0 ]; then #proxy nexus
     --link ${REDMINE_NAME}:${REDMINE_NAME} \
     --link ${DOKUWIKI_NAME}:${DOKUWIKI_NAME} \
     --link ${NEXUS_NAME}:${NEXUS_NAME} \
+    --link ${PHPLDAPADMIN_NAME}:${PHPLDAPADMIN_NAME} \
     --link ${LDAP_NAME}:${LDAP_NAME} \
     -p 80:80 \
     -v ${BASEDIR}/${NGINX_CONF}:/etc/nginx/nginx.conf:ro \
@@ -62,6 +63,7 @@ else #without nexus
     --link ${GERRIT_NAME}:${GERRIT_NAME} \
     --link ${JENKINS_NAME}:${JENKINS_NAME} \
     --link ${REDMINE_NAME}:${REDMINE_NAME} \
+    --link ${PHPLDAPADMIN_NAME}:${PHPLDAPADMIN_NAME} \
     --link ${LDAP_NAME}:${LDAP_NAME} \
     -p 80:80 \
     -v ${BASEDIR}/${NGINX_CONF}:/etc/nginx/nginx.conf:ro \
