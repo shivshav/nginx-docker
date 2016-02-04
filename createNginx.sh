@@ -23,11 +23,7 @@ PROXY_CONF=proxy.conf
 NGINX_CONF=nginx.conf
 
 # Setup proxy URI
-if [ ${#NEXUS_WEBURL} -eq 0 ]; then
-    sed "s/{{HOST_URL}}/${HOST_NAME}/g" ${BASEDIR}/${PROXY_CONF}.nexus.template > ${BASEDIR}/${PROXY_CONF}
-else
-    sed "s/{{HOST_URL}}/${HOST_NAME}/g" ${BASEDIR}/${PROXY_CONF}.template > ${BASEDIR}/${PROXY_CONF}
-fi
+sed "s/{{HOST_URL}}/${HOST_NAME}/g" ${BASEDIR}/${PROXY_CONF}.template > ${BASEDIR}/${PROXY_CONF}
 sed -i "s/{GERRIT_URI}/${GERRIT_NAME}/g" ${BASEDIR}/${PROXY_CONF}
 sed -i "s/{JENKINS_URI}/${JENKINS_NAME}/g" ${BASEDIR}/${PROXY_CONF}
 sed -i "s/{REDMINE_URI}/${REDMINE_NAME}/g" ${BASEDIR}/${PROXY_CONF}
@@ -43,30 +39,16 @@ sed -i "s/{LDAP_PASSWD}/${LDAP_PASSWD}/g" ${BASEDIR}/${NGINX_CONF}
 sed -i "s/{PHPLDAPADMIN_URI}/${PHPLDAPADMIN_NAME}/g" ${BASEDIR}/${PROXY_CONF}
 
 # Start proxy
-if [ ${#NEXUS_WEBURL} -eq 0 ]; then #proxy nexus
-    docker run \
-    --name ${NGINX_NAME} \
-    --link ${GERRIT_NAME}:${GERRIT_NAME} \
-    --link ${JENKINS_NAME}:${JENKINS_NAME} \
-    --link ${REDMINE_NAME}:${REDMINE_NAME} \
-    --link ${DOKUWIKI_NAME}:${DOKUWIKI_NAME} \
-    --link ${NEXUS_NAME}:${NEXUS_NAME} \
-    --link ${PHPLDAPADMIN_NAME}:${PHPLDAPADMIN_NAME} \
-    --link ${LDAP_NAME}:${LDAP_NAME} \
-    -p 80:80 \
-    -v ${BASEDIR}/${NGINX_CONF}:/etc/nginx/nginx.conf:ro \
-    -v ${BASEDIR}/${PROXY_CONF}:/etc/nginx/conf.d/default.conf:ro \
-    -d ${NGINX_IMAGE_NAME}
-else #without nexus
-    docker run \
-    --name ${NGINX_NAME} \
-    --link ${GERRIT_NAME}:${GERRIT_NAME} \
-    --link ${JENKINS_NAME}:${JENKINS_NAME} \
-    --link ${REDMINE_NAME}:${REDMINE_NAME} \
-    --link ${PHPLDAPADMIN_NAME}:${PHPLDAPADMIN_NAME} \
-    --link ${LDAP_NAME}:${LDAP_NAME} \
-    -p 80:80 \
-    -v ${BASEDIR}/${NGINX_CONF}:/etc/nginx/nginx.conf:ro \
-    -v ${BASEDIR}/${PROXY_CONF}:/etc/nginx/conf.d/default.conf:ro \
-    -d ${NGINX_IMAGE_NAME}
-fi
+docker run \
+--name ${NGINX_NAME} \
+--link ${GERRIT_NAME}:${GERRIT_NAME} \
+--link ${JENKINS_NAME}:${JENKINS_NAME} \
+--link ${REDMINE_NAME}:${REDMINE_NAME} \
+--link ${DOKUWIKI_NAME}:${DOKUWIKI_NAME} \
+--link ${NEXUS_NAME}:${NEXUS_NAME} \
+--link ${PHPLDAPADMIN_NAME}:${PHPLDAPADMIN_NAME} \
+--link ${LDAP_NAME}:${LDAP_NAME} \
+-p 80:80 \
+-v ${BASEDIR}/${NGINX_CONF}:/etc/nginx/nginx.conf:ro \
+-v ${BASEDIR}/${PROXY_CONF}:/etc/nginx/conf.d/default.conf:ro \
+-d ${NGINX_IMAGE_NAME}
