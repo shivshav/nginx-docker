@@ -1,3 +1,6 @@
 proxy.conf
 nginx.conf
 *.swp
+cert.key
+cert.crt
+directory.html
