@@ -69,7 +69,7 @@ http {
     auth_ldap_cache_size 1000;
 
     ldap_server ldapserver {
-        url ldap://{LDAP_NAME}/{LDAP_BASEDN}?uid?sub?(objectClass=person);
+        url ldap://{{ .Env.LDAP_SERVER }}/{{ .Env.LDAP_BASEDN }}?uid?sub?(objectClass=person);
 #        binddn "cn=admin,dc=demo,dc=com";
 #        binddn "{LDAP_BINDDN}";
 #        binddn_passwd {LDAP_PASSWD};

@@ -1,28 +1,54 @@
 server {
     listen       80;
-    server_name  {{HOST_URL}};
-    client_max_body_size {{NGINX_MAX_UPLOAD_SIZE}};
+    server_name  {{ .Env.OPENLDAP_ENV_SLAPD_DOMAIN }};
+    client_max_body_size {{ .Env.NGINX_MAX_UPLOAD_SIZE }};
+
+    auth_ldap "Forbidden";
+    auth_ldap_servers ldapserver;
 
     location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
     }
 
-    location /{GERRIT_URI}/ {
-        proxy_pass    http://{GERRIT_URI}:8080;
+    location /gerrit/ {
+        proxy_pass    http://gerrit:8080;
         proxy_set_header    X-Forwarded-For $remote_addr;
         proxy_set_header    Host $host;
+        proxy_set_header    X-Remote-User $remote_user;
     }
 
-    location /{JENKINS_URI} {
-        proxy_pass    http://{JENKINS_URI}:8080;
+    location /jenkins {
+        proxy_pass    http://jenkins:8080;
         proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header    X-Real-IP $remote_addr;
         proxy_set_header    Host $host;
     }
 
-    location /{REDMINE_URI} {
-        proxy_pass    http://{REDMINE_URI};
+    location /redmine {
+        proxy_pass    http://redmine;
+        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Real-IP $remote_addr;
+        proxy_set_header    Host $host;
+    }
+
+    location /nexus {
+        proxy_pass          http://nexus:8081/nexus;
+        proxy_set_header    Host $host;
+        proxy_set_header    X-Real-IP $remote_addr;
+        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    location /dokuwiki {
+        rewrite             /dokuwiki/(.*) /$1 break;
+        proxy_pass          http://dokuwiki/;
+        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header    X-Real-IP $remote_addr;
+        proxy_set_header    Host $host; 
+    }
+
+    location /phpldapadmin {
+        proxy_pass    http://phpldapadmin;
         proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header    X-Real-IP $remote_addr;
         proxy_set_header    Host $host;
@@ -36,5 +62,6 @@ server {
     location = /50x.html {
         root   /usr/share/nginx/html;
     }
+
 }
 
