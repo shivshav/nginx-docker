@@ -16,32 +16,6 @@ LDAP_DOMAIN=${10:-demo.com}
 LDAP_PASSWD=${11:-secret}
 PHPLDAPADMIN_NAME=${12:-phpldapadmin}
 
-#LDAP_BASEDN="dc=$(echo ${LDAP_DOMAIN} | sed 's/\./,dc=/g')"
-#LDAP_BINDDN="cn=admin,${LDAP_BASEDN}"
-#
-#PROXY_CONF=proxy.conf
-#NGINX_CONF=nginx.conf
-#
-## Setup proxy URI
-#if [ ${#NEXUS_WEBURL} -eq 0 ]; then
-#    sed "s/{{HOST_URL}}/${HOST_NAME}/g" ${BASEDIR}/${PROXY_CONF}.nexus.template > ${BASEDIR}/${PROXY_CONF}
-#else
-#    sed "s/{{HOST_URL}}/${HOST_NAME}/g" ${BASEDIR}/${PROXY_CONF}.template > ${BASEDIR}/${PROXY_CONF}
-#fi
-#sed -i "s/{GERRIT_URI}/${GERRIT_NAME}/g" ${BASEDIR}/${PROXY_CONF}
-#sed -i "s/{JENKINS_URI}/${JENKINS_NAME}/g" ${BASEDIR}/${PROXY_CONF}
-#sed -i "s/{REDMINE_URI}/${REDMINE_NAME}/g" ${BASEDIR}/${PROXY_CONF}
-#sed -i "s/{NEXUS_URI}/${NEXUS_NAME}/g" ${BASEDIR}/${PROXY_CONF}
-#sed -i "s/{DOKUWIKI_URI}/${DOKUWIKI_NAME}/g" ${BASEDIR}/${PROXY_CONF}
-#sed -i "s/{{NGINX_MAX_UPLOAD_SIZE}}/${NGINX_MAX_UPLOAD_SIZE}/g" ${BASEDIR}/${PROXY_CONF}
-#
-## Setup nginx ldap config
-#sed "s/{LDAP_NAME}/${LDAP_NAME}/g" ${BASEDIR}/${NGINX_CONF}.template > ${BASEDIR}/${NGINX_CONF}
-#sed -i "s/{LDAP_BASEDN}/${LDAP_BASEDN}/g" ${BASEDIR}/${NGINX_CONF} 
-#sed -i "s/{LDAP_BINDDN}/${LDAP_BINDDN}/g" ${BASEDIR}/${NGINX_CONF} 
-#sed -i "s/{LDAP_PASSWD}/${LDAP_PASSWD}/g" ${BASEDIR}/${NGINX_CONF} 
-#sed -i "s/{PHPLDAPADMIN_URI}/${PHPLDAPADMIN_NAME}/g" ${BASEDIR}/${PROXY_CONF}
-
 # Start proxy
 docker run \
     --name ${NGINX_NAME} \
